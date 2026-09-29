@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant — StockSense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+            min-height: 560px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-header p {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            background: #f8fafc;
+        }
+        .message-bubble {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .message-user {
+            align-self: flex-end;
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+        .message-ai {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 2px;
+            box-shadow: var(--shadow-sm);
+        }
+        .message-ai h3, .message-ai h4 {
+            margin-top: 6px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+        .message-ai ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        .message-ai li {
+            margin-bottom: 4px;
+        }
+        .message-ai table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        .message-ai th, .message-ai td {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .message-ai th {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .message-time {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 8px;
+            text-align: right;
+        }
+        .prompt-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .prompt-chip {
+            padding: 6px 12px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: 1px solid #bfdbfe;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .prompt-chip:hover {
+            background: #dbeafe;
+            transform: translateY(-1px);
+        }
+        .quick-prompts-bar {
+            display: flex;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .chat-input-area {
+            padding: 14px 20px;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            outline: none;
+        }
+        .chat-input-area input:focus {
+            border-color: var(--primary-color);
+        }
+        .typing-indicator {
+            align-self: flex-start;
+            background: white;
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+            display: none;
+        }
+    </style>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireAuth()) {
+            // Immediate redirect to login
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">
+            📈 Stock<span>Sense</span>
+        </a>
+        <nav>
+            <!-- Injected by auth.js -->
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="chat-container">
+            <div class="chat-header">
+                <div>
+                    <h2>🤖 StockSense Conversational AI Assistant</h2>
+                    <p>Context-aware technical stock analysis, multi-stock comparison & multilingual insights</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline" id="clearChatBtn" style="color: white; border-color: #475569; font-size: 12px; padding: 6px 12px;">🗑️ Clear Session</button>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message-bubble message-ai">
+                    <h3>Welcome to StockSense AI Market Assistant! 👋</h3>
+                    <p>I analyze 70+ Indian equities with verified technical indicators (SMA, EMA, RSI, MACD, Bollinger Bands) and supervised Random Forest AI forecasts.</p>
+                    <p style="margin-top: 8px;"><strong>Try asking:</strong></p>
+                    <div class="prompt-chips-container" style="border: none; padding-top: 4px;">
+                        <button class="prompt-chip" onclick="sendQuickPrompt('What is happening with TCS?')">What is happening with TCS?</button>
+                        <button class="prompt-chip" onclick="sendQuickPrompt('Compare TCS and INFY')">Compare TCS and INFY</button>
+                        <button class="prompt-chip" onclick="sendQuickPrompt('What is RSI?')">What is RSI?</button>
+                        <button class="prompt-chip" onclick="sendQuickPrompt('Why is Reliance predicted UP?')">Why Reliance UP?</button>
+                        <button class="prompt-chip" onclick="sendQuickPrompt('TCS gurinchi simple ga cheppu')">🇮🇳 TCS Telugu లో చెప్పు</button>
+                        <button class="prompt-chip" onclick="sendQuickPrompt('What are the risks with Tata Motors?')">Tata Motors risks?</button>
+                    </div>
+                    <div class="message-time">StockSense AI</div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    AI is analyzing stock data & generating response...
+                </div>
+            </div>
+
+            <!-- Quick Prompt Suggestions Bar -->
+            <div class="quick-prompts-bar">
+                <button class="prompt-chip" onclick="sendQuickPrompt('Analyze RELIANCE')">Analyze Reliance</button>
+                <button class="prompt-chip" onclick="sendQuickPrompt('Analyze TCS')">Analyze TCS</button>
+                <button class="prompt-chip" onclick="sendQuickPrompt('Compare HDFC and ICICI Bank')">HDFC vs ICICI</button>
+                <button class="prompt-chip" onclick="sendQuickPrompt('Explain MACD indicator')">Explain MACD</button>
+                <button class="prompt-chip" onclick="sendQuickPrompt('RSI ante enti?')">🇮🇳 RSI అంటే ఏమిటి?</button>
+                <button class="prompt-chip" onclick="sendQuickPrompt('How does AI predict?')">How AI Predicts</button>
+            </div>
+
+            <!-- Input Area -->
+            <form id="chatForm" class="chat-input-area">
+                <input
+                    type="text"
+                    id="chatInput"
+                    placeholder="Ask about any stock ('Analyze TCS', 'Compare TCS and INFY', 'RSI ante enti?')..."
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" class="btn btn-primary" id="btnSendChat">
+                    Send
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer-disclaimer">
+        StockSense provides educational market analysis and AI-generated predictions. Predictions are probabilistic model outputs and should not be considered guaranteed financial advice.
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ai-chat.js"></script>
+</body>
+</html>

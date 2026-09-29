@@ -1,0 +1,387 @@
+.stock-page {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.stock-header h1 {
+    margin-bottom: 5px;
+}
+
+.stock-symbol {
+    color: #666;
+}
+
+.current-price {
+    text-align: right;
+}
+
+.current-price h2 {
+    font-size: 32px;
+    margin: 0;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.info-grid,
+.indicator-grid,
+.ai-result {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.info-grid div,
+.indicator-grid div,
+.ai-result div {
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 8px;
+}
+
+.info-grid span,
+.indicator-grid span,
+.ai-result span {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 7px;
+}
+
+.info-grid strong,
+.indicator-grid strong,
+.ai-result strong {
+    font-size: 17px;
+}
+
+.ai-card {
+    border-left: 5px solid #333;
+}
+
+.ai-note {
+    margin-top: 20px;
+    color: #666;
+}
+
+
+/* ============================================
+   Historical Price Period Buttons
+============================================ */
+
+.period-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.period-buttons button {
+    padding: 9px 18px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #f7f7f7;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.period-buttons button:hover {
+    background: #e9e9e9;
+}
+
+.period-buttons button:active {
+    transform: scale(0.97);
+}
+
+
+/* ============================================
+   Historical Price Chart
+============================================ */
+
+#historyContainer {
+    width: 100%;
+    min-height: 400px;
+    overflow-x: auto;
+    position: relative;
+    padding-top: 10px;
+}
+
+#historyContainer canvas {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+
+#historyContainer {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: right;
+}
+
+.history-table th {
+    background: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+
+    .stock-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .current-price {
+        text-align: left;
+    }
+
+    .info-grid,
+    .indicator-grid,
+    .ai-result {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.performance-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+}
+
+.performance-grid div {
+    padding: 15px;
+    border-radius: 8px;
+    background: #f5f5f5;
+}
+
+.performance-grid span {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.performance-grid strong {
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .performance-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================
+   AI Market Analysis
+============================================ */
+
+.ai-card {
+    margin-top: 25px;
+}
+
+.ai-card h2 {
+    margin-bottom: 20px;
+}
+
+.ai-result {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+}
+
+.ai-result > div {
+    background: #f7f8fa;
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+}
+
+.ai-result span {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.ai-result strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+/* AI Analysis */
+
+.ai-analysis {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f7f8fa;
+    border-radius: 10px;
+}
+
+.ai-analysis h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.ai-analysis ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.ai-analysis li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+
+/* Prediction colors */
+
+.prediction-up {
+    color: #16803c;
+}
+
+.prediction-down {
+    color: #d93025;
+}
+
+
+/* AI Signal colors */
+
+.ai-result .prediction-up {
+    color: #16803c;
+}
+
+.ai-result .prediction-down {
+    color: #d93025;
+}
+
+
+/* AI note */
+
+.ai-note {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #777;
+}
+
+
+/* ============================================
+   Responsive Design
+============================================ */
+
+@media (max-width: 900px) {
+
+    .ai-result {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .ai-result {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   Recommendation / Outlook Card
+============================================ */
+
+.recommendation-card {
+    border-left: 5px solid var(--primary-color, #2563eb);
+}
+
+.recommendation-card h2 {
+    margin-bottom: 16px;
+}
+
+/* ============================================
+   Stock Actions Bar
+============================================ */
+
+.stock-actions-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.stock-actions-bar .btn {
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.stock-actions-bar .btn-primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.stock-actions-bar .btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.stock-actions-bar .btn-outline {
+    background: transparent;
+    color: #2563eb;
+    border-color: #93c5fd;
+}
+
+.stock-actions-bar .btn-outline:hover {
+    background: #eff6ff;
+}
+
+/* ============================================
+   Text Positive / Negative helpers
+   (in case stock.css is loaded without style.css)
+============================================ */
+
+.text-positive {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.text-negative {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.text-neutral {
+    color: #64748b;
+}

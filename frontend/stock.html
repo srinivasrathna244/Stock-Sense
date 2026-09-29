@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Details — StockSense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/stock.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .stock-actions-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .news-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        .news-item h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .news-item p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .news-meta {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        .period-buttons button.active {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+    </style>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireAuth()) {
+            // Immediate redirect to login for unauthenticated users
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">
+            📈 Stock<span>Sense</span>
+        </a>
+        <nav>
+            <!-- Injected by auth.js -->
+        </nav>
+    </header>
+
+    <main class="stock-page">
+        <!-- Loading State -->
+        <div id="loading" style="text-align: center; padding: 40px;">
+            <p>Loading stock analysis and historical market data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorMessage"></div>
+
+        <!-- Main Stock Content -->
+        <section id="stockContent" style="display: none;">
+            
+            <div class="stock-header">
+                <div>
+                    <h1 id="companyName"></h1>
+                    <p id="stockSymbol" class="stock-symbol-tag" style="display: inline-block; font-size: 14px; margin-top: 4px;"></p>
+                </div>
+
+                <div class="current-price">
+                    <h2 id="currentPrice">--</h2>
+                    <p id="change">--</p>
+                </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="stock-actions-bar">
+                <button id="btnWatchlistToggle" class="btn btn-outline" onclick="toggleStockWatchlist()">
+                    ★ Add to Watchlist
+                </button>
+                <button class="btn btn-primary" onclick="openStockTradeModal()">
+                    💼 Record Trade
+                </button>
+                <button class="btn btn-outline" onclick="askAiAboutCurrentStock()" style="border-color: #93c5fd; color: var(--primary-color);">
+                    🤖 Ask AI About This Stock
+                </button>
+                <button class="btn btn-outline" onclick="openComparePrompt()" style="border-color: #cbd5e1;">
+                    ⚖️ Compare Stock
+                </button>
+            </div>
+
+            <!-- Market Information -->
+            <section class="card">
+                <h2>Market Information</h2>
+                <div class="info-grid">
+                    <div>
+                        <span>Open Price</span>
+                        <strong id="openPrice">--</strong>
+                    </div>
+                    <div>
+                        <span>Day High</span>
+                        <strong id="highPrice">--</strong>
+                    </div>
+                    <div>
+                        <span>Day Low</span>
+                        <strong id="lowPrice">--</strong>
+                    </div>
+                    <div>
+                        <span>Previous Close</span>
+                        <strong id="previousClose">--</strong>
+                    </div>
+                    <div>
+                        <span>Volume</span>
+                        <strong id="volume">--</strong>
+                    </div>
+                    <div>
+                        <span>Latest Trading Day</span>
+                        <strong id="tradingDay">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Company Profile -->
+            <section class="card">
+                <h2>Company Profile</h2>
+                <div class="info-grid">
+                    <div>
+                        <span>Exchange</span>
+                        <strong id="exchange">--</strong>
+                    </div>
+                    <div>
+                        <span>Country</span>
+                        <strong id="country">--</strong>
+                    </div>
+                    <div>
+                        <span>Sector</span>
+                        <strong id="sector">--</strong>
+                    </div>
+                    <div>
+                        <span>Industry</span>
+                        <strong id="industry">--</strong>
+                    </div>
+                    <div>
+                        <span>Currency</span>
+                        <strong id="currency">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Price Performance -->
+            <section class="card">
+                <h2>Historical Price Performance</h2>
+                <div class="performance-grid">
+                    <div>
+                        <span>1 Week</span>
+                        <strong id="oneWeekPerformance">--</strong>
+                    </div>
+                    <div>
+                        <span>1 Month</span>
+                        <strong id="oneMonthPerformance">--</strong>
+                    </div>
+                    <div>
+                        <span>3 Months</span>
+                        <strong id="threeMonthsPerformance">--</strong>
+                    </div>
+                    <div>
+                        <span>6 Months</span>
+                        <strong id="sixMonthsPerformance">--</strong>
+                    </div>
+                    <div>
+                        <span>1 Year</span>
+                        <strong id="oneYearPerformance">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Historical Chart -->
+            <section class="card">
+                <h2>Interactive Price Chart</h2>
+                <div class="period-buttons">
+                    <button class="active" id="btn-1W" onclick="loadHistory('1W')">1 Week</button>
+                    <button id="btn-1M" onclick="loadHistory('1M')">1 Month</button>
+                    <button id="btn-3M" onclick="loadHistory('3M')">3 Months</button>
+                    <button id="btn-6M" onclick="loadHistory('6M')">6 Months</button>
+                    <button id="btn-1Y" onclick="loadHistory('1Y')">1 Year</button>
+                </div>
+                <div id="historyContainer" style="height: 380px;">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Technical Indicators -->
+            <section class="card">
+                <h2>Calculated Technical Indicators</h2>
+                <div class="indicator-grid">
+                    <div>
+                        <span>SMA 20</span>
+                        <strong id="sma20">--</strong>
+                    </div>
+                    <div>
+                        <span>SMA 50</span>
+                        <strong id="sma50">--</strong>
+                    </div>
+                    <div>
+                        <span>EMA 20</span>
+                        <strong id="ema20">--</strong>
+                    </div>
+                    <div>
+                        <span>EMA 50</span>
+                        <strong id="ema50">--</strong>
+                    </div>
+                    <div>
+                        <span>RSI (14)</span>
+                        <strong id="rsi">--</strong>
+                    </div>
+                    <div>
+                        <span>MACD</span>
+                        <strong id="macd">--</strong>
+                    </div>
+                    <div>
+                        <span>MACD Signal</span>
+                        <strong id="macdSignal">--</strong>
+                    </div>
+                    <div>
+                        <span>MACD Histogram</span>
+                        <strong id="macdHistogram">--</strong>
+                    </div>
+                    <div>
+                        <span>Bollinger Upper</span>
+                        <strong id="bollingerUpper">--</strong>
+                    </div>
+                    <div>
+                        <span>Bollinger Middle</span>
+                        <strong id="bollingerMiddle">--</strong>
+                    </div>
+                    <div>
+                        <span>Bollinger Lower</span>
+                        <strong id="bollingerLower">--</strong>
+                    </div>
+                    <div>
+                        <span>Volatility</span>
+                        <strong id="volatility">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Market Analysis & Direction Prediction -->
+            <section class="card ai-card">
+                <h2>🤖 AI Market Analysis & Direction Prediction</h2>
+                <div class="ai-result">
+                    <div>
+                        <span>Direction Forecast</span>
+                        <strong id="prediction">--</strong>
+                    </div>
+                    <div>
+                        <span>Confidence Score</span>
+                        <strong id="confidence">--</strong>
+                    </div>
+                    <div>
+                        <span>Probability</span>
+                        <strong id="probability">--</strong>
+                    </div>
+                    <div>
+                        <span>Analysis Price</span>
+                        <strong id="aiCurrentPrice">--</strong>
+                    </div>
+                    <div>
+                        <span>AI Signal</span>
+                        <strong id="aiSignal">--</strong>
+                    </div>
+                </div>
+
+                <div class="ai-analysis">
+                    <h3>AI Momentum Breakdown</h3>
+                    <p id="aiSummary">Analyzing indicator configuration...</p>
+                    <ul id="aiReasons">
+                        <li>Evaluating trend indicators...</li>
+                    </ul>
+                </div>
+
+                <p class="ai-note">
+                    <strong>Note:</strong> Predictions are generated by the StockSense Random Forest model trained on historical indicators. Model outputs are probabilistic estimates, not guaranteed outcomes.
+                </p>
+            </section>
+
+            <!-- Trading Recommendation -->
+            <section class="card recommendation-card">
+                <h2>📊 Algorithmic Technical Outlook</h2>
+                <div class="recommendation-box" style="padding: 16px; background: #f8fafc; border-radius: 8px;">
+                    <div style="font-size: 22px; font-weight: 800; margin-bottom: 8px;" id="recommendation">
+                        Analyzing...
+                    </div>
+                    <p id="recommendationReason" style="color: var(--text-muted); font-size: 14px;">
+                        Evaluating indicators and model signals...
+                    </p>
+                </div>
+            </section>
+
+            <!-- News Section -->
+            <section class="card">
+                <h2>Latest Company News</h2>
+                <div id="stockNewsContainer">
+                    <p style="color: var(--text-muted);">Checking for recent news articles...</p>
+                </div>
+            </section>
+
+        </section>
+    </main>
+
+    <!-- Trade Modal for Quick Trading -->
+    <div id="stockTradeModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Record Trade for <span id="modalStockSymbol"></span></h3>
+                <button class="modal-close" onclick="closeStockTradeModal()">&times;</button>
+            </div>
+            <form id="stockTradeForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modalTradeType">Transaction Type *</label>
+                        <select id="modalTradeType" class="form-control" required>
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="modalTradeQuantity">Quantity *</label>
+                            <input type="number" id="modalTradeQuantity" class="form-control" placeholder="10" min="0.01" step="any" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalTradePrice">Price / Share (₹) *</label>
+                            <input type="number" id="modalTradePrice" class="form-control" step="any" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeStockTradeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnModalSubmitTrade">Record Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer-disclaimer">
+        StockSense provides educational market analysis and AI-generated predictions. Predictions are probabilistic model outputs and should not be considered guaranteed financial advice.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/stock.js"></script>
+</body>
+</html>

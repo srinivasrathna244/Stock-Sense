@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Dashboard — StockSense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        /* Discovery Carousel / Highlights */
+        .discovery-section {
+            margin-bottom: 32px;
+        }
+        .discovery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .discovery-card {
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .discovery-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .discovery-card-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mini-stock-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .mini-stock-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-main);
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s ease;
+        }
+        .mini-stock-item:hover {
+            background: #e2e8f0;
+        }
+        .mini-stock-symbol {
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .mini-stock-name {
+            font-size: 11px;
+            color: var(--text-muted);
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Filter Toolbar */
+        .filter-toolbar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .cap-pills {
+            display: flex;
+            gap: 6px;
+        }
+        .cap-pill {
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cap-pill.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .sector-select, .sort-select {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: white;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding: 16px;
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-main);
+            border-color: var(--text-light);
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Compare Floating Bar */
+        .compare-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            gap: 16px;
+            z-index: 150;
+            font-size: 14px;
+            animation: toastSlideIn 0.3s ease;
+        }
+    </style>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireAuth()) {
+            // Immediate redirect to login
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">
+            📈 Stock<span>Sense</span>
+        </a>
+        <nav>
+            <!-- Injected by auth.js -->
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Market Indices -->
+        <section class="indices-grid" id="indicesList">
+            <!-- Injected dynamically -->
+        </section>
+
+        <!-- Hero Section -->
+        <section class="hero-banner">
+            <h1>AI-Driven Market Intelligence</h1>
+            <p>
+                Explore 70+ Indian equities across 15+ sectors with verified technical indicators,
+                Random Forest ML predictions, comparative stock analytics, and conversational AI assistance.
+            </p>
+
+            <div class="search-section">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by company name, ticker, or sector (e.g. Tata, Reliance, INFY, Banking, Defence)..."
+                >
+                <button id="searchBtn">
+                    🔍 Search
+                </button>
+            </div>
+        </section>
+
+        <!-- Market Discovery Highlights -->
+        <section class="discovery-section">
+            <div class="discovery-grid">
+                <!-- Top Gainers -->
+                <div class="discovery-card">
+                    <div class="discovery-card-header">
+                        <h3>🟢 Top Gainers</h3>
+                        <span style="font-size: 12px; color: var(--text-muted);">Session Change</span>
+                    </div>
+                    <div id="topGainersList" class="mini-stock-list">
+                        <p style="font-size: 13px; color: var(--text-muted);">Loading gainers...</p>
+                    </div>
+                </div>
+
+                <!-- Top Losers -->
+                <div class="discovery-card">
+                    <div class="discovery-card-header">
+                        <h3>🔴 Top Losers</h3>
+                        <span style="font-size: 12px; color: var(--text-muted);">Session Change</span>
+                    </div>
+                    <div id="topLosersList" class="mini-stock-list">
+                        <p style="font-size: 13px; color: var(--text-muted);">Loading losers...</p>
+                    </div>
+                </div>
+
+                <!-- Most Active -->
+                <div class="discovery-card">
+                    <div class="discovery-card-header">
+                        <h3>⚡ Most Active Equities</h3>
+                        <span style="font-size: 12px; color: var(--text-muted);">Trading Volume</span>
+                    </div>
+                    <div id="mostActiveList" class="mini-stock-list">
+                        <p style="font-size: 13px; color: var(--text-muted);">Loading active...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stock Catalog with Filters -->
+        <section>
+            <div class="section-header">
+                <h2>📈 Listed Stocks Universe (<span id="stocksTotalCount">...</span>)</h2>
+                <div style="font-size: 13px; color: var(--text-muted);" id="paginationSummary">Showing page 1</div>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="filter-toolbar">
+                <div class="filter-group">
+                    <span class="filter-label">Market Cap:</span>
+                    <div class="cap-pills" id="capPills">
+                        <button class="cap-pill active" data-category="all">All</button>
+                        <button class="cap-pill" data-category="Large Cap">Large Cap</button>
+                        <button class="cap-pill" data-category="Mid Cap">Mid Cap</button>
+                        <button class="cap-pill" data-category="Small Cap">Small Cap</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Sector:</span>
+                    <select id="sectorSelect" class="sector-select">
+                        <option value="all">All Sectors</option>
+                    </select>
+
+                    <span class="filter-label" style="margin-left: 10px;">Sort:</span>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="name_asc">Name (A–Z)</option>
+                        <option value="name_desc">Name (Z–A)</option>
+                        <option value="symbol_asc">Symbol (A–Z)</option>
+                        <option value="sector_asc">By Sector</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stock Grid -->
+            <div id="stockList" class="stock-grid">
+                <p>Loading stock catalog...</p>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-container" id="paginationBar">
+                <div id="pageInfoText" style="font-size: 14px; color: var(--text-muted);">Page 1 of 1</div>
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" class="pagination-btn" disabled>&larr; Previous</button>
+                    <button id="nextPageBtn" class="pagination-btn">Next &rarr;</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Compare Floating Action Bar -->
+    <div id="compareBar" class="compare-bar">
+        <span>Selected: <strong id="compareSelectedText">0/2 stocks</strong></span>
+        <button class="btn btn-primary" id="launchCompareBtn" style="padding: 6px 14px; font-size: 13px;">⚖️ Compare Now</button>
+        <button id="clearCompareBtn" style="background: transparent; border: none; color: #94a3b8; cursor: pointer;">&times; Clear</button>
+    </div>
+
+    <footer class="footer-disclaimer">
+        StockSense provides educational market analysis and AI-generated predictions. Predictions are probabilistic model outputs and should not be considered guaranteed financial advice.
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

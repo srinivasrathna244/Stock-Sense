@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Watchlist — StockSense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .watchlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .watchlist-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+        .watchlist-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        .watchlist-info h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .watchlist-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .watchlist-price-block {
+            text-align: right;
+            margin-right: 24px;
+        }
+        .watchlist-price {
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .watchlist-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .empty-watchlist {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--border-color);
+        }
+        .empty-watchlist h3 {
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        .empty-watchlist p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireAuth()) {
+            // Immediate redirect to login
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">
+            📈 Stock<span>Sense</span>
+        </a>
+        <nav>
+            <!-- Injected by auth.js -->
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="watchlist-header">
+            <div>
+                <h1>⭐ My Watchlist</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">Monitor your selected stocks, real-time market quotes, and AI direction signals.</p>
+            </div>
+            <a href="dashboard.html" class="btn btn-outline">+ Discover Stocks</a>
+        </div>
+
+        <div id="watchlistContent">
+            <p>Loading your watchlist...</p>
+        </div>
+    </main>
+
+    <footer class="footer-disclaimer">
+        StockSense provides educational market analysis and AI-generated predictions. Predictions are probabilistic model outputs and should not be considered guaranteed financial advice.
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/watchlist.js"></script>
+</body>
+</html>

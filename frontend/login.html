@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — StockSense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+    <script src="js/auth.js"></script>
+    <script>
+        // If already authenticated, redirect straight to dashboard
+        if (isLoggedIn()) {
+            window.location.replace("dashboard.html");
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="login.html" class="logo">
+            📈 Stock<span>Sense</span>
+        </a>
+        <nav>
+            <!-- Injected by auth.js -->
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="auth-page">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to access your dashboard, AI predictions, watchlist, and portfolio.</p>
+            </div>
+
+            <div id="authAlert" class="alert"></div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-control"
+                        placeholder="e.g. user@stocksense.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="register.html">Create one</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-disclaimer">
+        StockSense provides educational market analysis and AI-generated predictions. Predictions are probabilistic model outputs and should not be considered guaranteed financial advice.
+    </footer>
+
+    <script src="js/api.js"></script>
+</body>
+</html>
